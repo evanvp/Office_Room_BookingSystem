@@ -1,7 +1,7 @@
 // routes: /reader
 const express = require('express');
 const router = express.Router();
-const BlogSetting = require('../config/blogSettings');
+
 
 // Route to render the office management page
 router.get('/main', (req, res, next) => {
