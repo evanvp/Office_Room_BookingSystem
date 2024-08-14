@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Availability</title>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            flatpickr("#start-time-picker", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i"
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>Check Room Availability</h1>
+    <form action="/user/check-availability" method="POST">
+        <label for="office_name">Select Office:</label>
+        <select name="office_name" id="office_name">
+            <% offices.forEach(office => { %>
+                <option value="<%= office.name %>" <%= office.name === office_name ? 'selected' : '' %>><%= office.name %></option>
+            <% }) %>
+        </select>
+
+        <label for="start_time">Start Time:</label>
+        <input type="datetime-local" name="start_time" id="start-time-picker" value="<%= start_time %>" required>
+
+        <label for="duration">Duration (hours):</label>
+        <input type="number" name="duration" id="duration" min="1" max="8" value="<%= duration %>" required>
+
+        <button type="submit">Check Availability</button>
+    </form>
+
+    <% if (available_rooms.length > 0) { %>
+        <div id="booking-details">
+            <h3>Booking Summary</h3>
+            <p><strong>Office Name:</strong> <%= office_name %></p>
+            <p><strong>Start Time:</strong> <%= start_time %></p>
+            <p><strong>Duration:</strong> <%= duration %> hours</p>
+        </div>
+
+        <h2>Available Rooms</h2>
+        <form action="/user/submit-booking" method="POST">
+            <input type="hidden" name="office_name" value="<%= office_name %>">
+            <input type="hidden" name="start_time" value="<%= start_time %>">
+            <input type="hidden" name="duration" value="<%= duration %>">
+            
+
+            <label for="room_id">Select Room:</label>
+            <select name="room_id" id="room_id">
+                <% available_rooms.forEach(room => { %>
+                    <option value="<%= room.room_id %>"><%= room.room_id %></option>
+                <% }) %>
+            </select>
+            
+            <button type="submit">Reserve</button>
+        </form>
+    <% } else if (available_rooms.length === 0 && start_time && duration) { %>
+        <p>No available rooms found for the selected time.</p>
+    <% } %>
+</body>
+</html>

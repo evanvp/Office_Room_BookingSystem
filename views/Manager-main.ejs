@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Management</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #greeting {
+            margin-bottom: 20px;
+        }
+
+        #buttons {
+            margin-top: 20px;
+        }
+
+        #buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        /* Simple CSS for scrollable div */
+        #office-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="greeting">Welcome back to your Office Management Hub!</h1>
+    <p>On this page, you can choose to:</p>
+
+    <div id="buttons">
+        <button onclick="window.location.href='/manager/create-office'">Create New Office</button>
+        <button onclick="window.location.href='/manager/view-bookings'">View Current Bookings</button>
+    </div>
+
+
+    <div id="office-list">
+        <h3>Available Offices</h3>
+        <ul>
+            <% offices.forEach(office => { %>
+                <li>
+                    <strong><%= office.name %></strong><br>
+                    Address: <%= office.address %><br>
+                    Total Rooms: <%= office.number_of_rooms %>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</body>
+</html>

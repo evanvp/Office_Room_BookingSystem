@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Booking System</title>
+    <style>
+        /* Simple CSS for scrollable div */
+        #office-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        /* Simple styling for the rules section */
+        #info-board {
+            margin-bottom: 20px;
+        }
+
+        #info-board h2 {
+            margin-bottom: 10px;
+        }
+
+        #info-board ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #info-board li {
+            margin-bottom: 10px;
+        }
+
+        #buttons {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Office Booking System</h1>
+
+    <div id="info-board">
+        <h2>Information Board</h2>
+        <p><strong>Booking:</strong> To make a new reservation, press the "New Booking" button. You will be prompted to select the desired office, start time, and duration for your booking. The system will then check the availability of rooms for the chosen time. Once the availability is displayed, you can select an available room and confirm your reservation. A confirmation message will be provided once the booking is successfully completed.</p>
+
+        <p><strong>Tracking:</strong> To view your existing reservations, press the "Track Booking" button. You will need to enter the relevant details of your booking to search for it. If the reservation is found, the system will display its details. You can then choose to view, modify, or cancel your reservation as needed.</p>
+    </div>
+
+
+    <div id="buttons">
+        <button onclick="window.location.href='/user/book-room'">New Booking</button>
+        <button onclick="window.location.href='/user/track-booking'">Track Booking</button>
+    </div>
+
+    <div id="office-list">
+        <h3>Available Offices</h3>
+        <ul>
+            <% offices.forEach(office => { %>
+                <li>
+                    <strong><%= office.name %></strong><br>
+                    Address: <%= office.address %><br>
+                    Total Rooms: <%= office.number_of_rooms %>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</body>
+</html>
