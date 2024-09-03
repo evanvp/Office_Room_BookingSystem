@@ -151,10 +151,6 @@ router.post('/check-availability', (req, res, next) => {
     const startDate = new Date(startTime);
     const endDate = new Date(startDate.getTime() + duration * 60 * 60 * 1000);
 
-    // Convert start and end times to UTC and format as YYYY-MM-DD HH:MM:SS
-    const startTimeUTC = startDate.toISOString().slice(0, 19).replace('T', ' ');
-    const endTimeUTC = endDate.toISOString().slice(0, 19).replace('T', ' ');
-
     // Get office_id
     const officeQuery = "SELECT office_id FROM office WHERE name = ?";
     global.db.get(officeQuery, [officeName], (err, office) => {
@@ -182,7 +178,7 @@ router.post('/check-availability', (req, res, next) => {
         global.db.all(allOfficesQuery, (err, offices) => {
             if (err) return next(err);
 
-            global.db.all(roomQuery, [officeId, endTimeUTC, startTimeUTC], (err, rooms) => {
+            global.db.all(roomQuery, [officeId, endDate, startDate], (err, rooms) => {
                 if (err) return next(err);
 
                 res.render('Booking-check', {
@@ -205,16 +201,12 @@ router.post('/submit-booking', (req, res, next) => {
     const startDate = new Date(start_time);
     const endDate = new Date(startDate.getTime() + parseInt(duration) * 60 * 60 * 1000);
 
-    // Convert both start_time and end_time to UTC and format as YYYY-MM-DD HH:MM:SS
-    const startTimeUTC = startDate.toISOString().slice(0, 19).replace('T', ' ');
-    const endTimeUTC = endDate.toISOString().slice(0, 19).replace('T', ' ');
-
     // Insert a record into the time_record table
     const timeRecordQuery = `
         INSERT INTO time_record (room_id, record_starttime, record_endtime)
         VALUES (?, ?, ?)`;
 
-    global.db.run(timeRecordQuery, [room_id, startTimeUTC, endTimeUTC], function(err) {
+    global.db.run(timeRecordQuery, [room_id, startDate, endDate], function(err) {
         if (err) {
             return next(err);  // Pass the error to the error handler middleware
         }
@@ -227,7 +219,7 @@ router.post('/submit-booking', (req, res, next) => {
             INSERT INTO reservation (room_id, time_record_id, reservation_starttime, reservation_endtime)
             VALUES (?, ?, ?, ?)`;
 
-        global.db.run(reservationQuery, [room_id, timeRecordId, startTimeUTC, endTimeUTC], function(err) {
+        global.db.run(reservationQuery, [room_id, timeRecordId, startDate, endDate], function(err) {
             if (err) {
                 return next(err);  // Pass the error to the error handler middleware
             }

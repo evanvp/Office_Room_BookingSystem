@@ -58,8 +58,8 @@
                     <td><%= reservation.reservation_id %></td>
                     <td><%= reservation.office_name %></td>
                     <td><%= reservation.room_id %></td>
-                    <td><%= reservation.reservation_starttime %></td>
-                    <td><%= reservation.reservation_endtime %></td>
+                    <td><%= new Date(reservation.reservation_starttime).toLocaleString() %></td>
+                    <td><%= new Date(reservation.reservation_endtime).toLocaleString() %></td>
                 </tr>
             </table>
             <form action="/user/delete-reservation" method="post">
