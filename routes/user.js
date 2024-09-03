@@ -21,10 +21,99 @@ router.get('/main', (req, res, next) => {
     });
 });
 
-module.exports = router;
+// Route to render the search page for reservations
+router.get('/search-reservation', (req, res) => {
+    res.render('Booking-searchReservation', {
+        reservation: null, 
+        notFound: false   
+    });
+});
+
+// Route to search for a reservation
+router.post('/search-reservation', (req, res, next) => {
+    const reservationId = req.body.reservation_id;
+
+    // Combined query to get reservation details and office name
+    const query = `
+        SELECT 
+            reservation.reservation_id, 
+            room.room_id, 
+            office.name AS office_name, 
+            reservation.reservation_starttime, 
+            reservation.reservation_endtime
+        FROM reservation
+        JOIN room ON reservation.room_id = room.room_id
+        JOIN office ON room.office_id = office.office_id
+        WHERE reservation.reservation_id = ?`;
+
+    global.db.get(query, [reservationId], (err, reservation) => {
+        if (err) return next(err);
+
+        if (!reservation) {
+            // No reservation found, render with notFound flag
+            res.render('Booking-searchReservation', { 
+                reservation: null, // No reservation details
+                notFound: true     // Show not found message
+            });
+        } else {
+            // Render with reservation details
+            res.render('Booking-searchReservation', { 
+                reservation: reservation,
+                notFound: false 
+            });
+        }
+    });
+});
 
 
+// Route to delete a reservation
+router.post('/delete-reservation', (req, res, next) => {
+    const reservationId = req.body.reservation_id;
 
+    // Begin transaction
+    global.db.serialize(() => {
+        global.db.run("BEGIN TRANSACTION");
+
+        // Query to get the room_id and time_record_id associated with the reservation
+        const getDetailsQuery = `
+            SELECT room_id, time_record_id
+            FROM reservation
+            WHERE reservation_id = ?`;
+
+        global.db.get(getDetailsQuery, [reservationId], (err, details) => {
+            if (err) return global.db.run("ROLLBACK TRANSACTION", () => next(err));
+            if (!details) return global.db.run("ROLLBACK TRANSACTION", () => res.status(404).send('Reservation not found'));
+
+            const { room_id, time_record_id } = details;
+
+            // Delete from reservation table
+            const deleteReservationQuery = `
+                DELETE FROM reservation
+                WHERE reservation_id = ?`;
+
+            global.db.run(deleteReservationQuery, [reservationId], (err) => {
+                if (err) return global.db.run("ROLLBACK TRANSACTION", () => next(err));
+
+                // Delete from time_record table
+                const deleteTimeRecordQuery = `
+                    DELETE FROM time_record
+                    WHERE record_id = ?`;
+
+                global.db.run(deleteTimeRecordQuery, [time_record_id], (err) => {
+                    if (err) return global.db.run("ROLLBACK TRANSACTION", () => next(err));
+
+                    // Commit transaction
+                    global.db.run("COMMIT TRANSACTION", (err) => {
+                        if (err) return next(err);
+
+                        // Redirect to main page
+                        res.redirect('/user/main');
+                    });
+                });
+            });
+        });
+    });
+});
 
 
 

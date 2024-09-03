@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search and Delete Reservation</title>
+    <style>
+        #search-form {
+            margin-bottom: 20px;
+        }
+        #reservation-details {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .not-found {
+            color: red;
+            font-weight: bold;
+        }
+
+        button{
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search and Delete Reservation</h1>
+
+    <form id="search-form" action="/user/search-reservation" method="post">
+        <label for="reservation_id">Enter Reservation Number:</label>
+        <input type="text" id="reservation_id" name="reservation_id" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <% if (reservation) { %>
+        <div id="reservation-details">
+            <h2>Reservation Details</h2>
+            <table>
+                <tr>
+                    <th>Reservation ID</th>
+                    <th>Office Name</th>
+                    <th>Room ID</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+                <tr>
+                    <td><%= reservation.reservation_id %></td>
+                    <td><%= reservation.office_name %></td>
+                    <td><%= reservation.room_id %></td>
+                    <td><%= reservation.reservation_starttime %></td>
+                    <td><%= reservation.reservation_endtime %></td>
+                </tr>
+            </table>
+            <form action="/user/delete-reservation" method="post">
+                <input type="hidden" name="reservation_id" value="<%= reservation.reservation_id %>">
+                <button type="submit">Delete Reservation</button>
+            </form>
+        </div>
+    <% } else if (notFound) { %>
+        <p class="not-found">The reservation is not found!</p>
+    <% } %>
+
+    <div id="back-link">
+        <a href="/user/main">Back to Main Page</a>
+    </div>
+</body>
+</html>
