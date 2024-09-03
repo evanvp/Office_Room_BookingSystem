@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Reservations</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #reservations-list {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reservations</h1>
+
+    <div class="form-group">
+        <form method="GET" action="/manager/view-reservations">
+            <label for="office">Select Office:</label>
+            <select id="office" name="office_id" onchange="this.form.submit()">
+                <option value="">All Offices</option>
+                <% offices.forEach(office => { %>
+                    <option value="<%= office.office_id %>" <%= office.office_id == selectedOfficeId ? 'selected' : '' %>><%= office.name %></option>
+                <% }) %>
+            </select>
+        </form>
+    </div>
+
+    <div id="reservations-list">
+        <h3>Reservations</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Reservation ID</th>
+                    <th>Reservation Time</th>
+                    <th>Office Name</th>
+                    <th>Room ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% reservations.forEach(reservation => { %>
+                    <tr>
+                        <td><%= reservation.reservation_id %></td>
+                        <td><%= new Date(reservation.reservation_starttime).toLocaleString() %> - <%= new Date(reservation.reservation_endtime).toLocaleString() %></td>
+                        <td><%= reservation.office_name %></td>
+                        <td><%= reservation.room_id %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -74,6 +74,49 @@ router.post('/create-office', (req, res, next) => {
 });
 
 
+// Route to render reservations page
+router.get('/view-reservations', (req, res, next) => {
+    const selectedOfficeId = req.query.office_id || '';
+
+    // Query to get the list of offices
+    const officeQuery = "SELECT * FROM office";
+
+    global.db.all(officeQuery, (err, offices) => {
+        if (err) {
+            return next(err);
+        }
+
+        // Query to get reservations
+        // Join reservation, room, and office tables to get complete data
+        let reservationQuery = `
+            SELECT r.reservation_id, r.reservation_starttime, r.reservation_endtime, ro.room_id, o.name AS office_name
+            FROM reservation r
+            JOIN room ro ON r.room_id = ro.room_id
+            JOIN office o ON ro.office_id = o.office_id
+        `;
+
+        // Filter by office if selected
+        if (selectedOfficeId) {
+            reservationQuery += ` WHERE o.office_id = ?`;
+        }
+
+        reservationQuery += ` ORDER BY r.reservation_id DESC`;
+
+        global.db.all(reservationQuery, selectedOfficeId ? [selectedOfficeId] : [], (err, reservations) => {
+            if (err) {
+                return next(err);
+            }
+
+            // Render the reservations page with the list of offices and reservations
+            res.render('Manager-viewReservations', {
+                offices: offices,
+                reservations: reservations,
+                selectedOfficeId: selectedOfficeId
+            });
+        });
+    });
+});
+
 
 
 
