@@ -1,6 +1,5 @@
 /**
 * index.js
-* This is your main app entry point
 */
 
 // Set up express, bodyparser and EJS
@@ -26,7 +25,6 @@ global.db = new sqlite3.Database('./database.db',function(err){
 });
 
 // Handle requests to the home page 
-//Using simple send with basic html (2 links), so no additional HTML file required
 app.get('/', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -48,7 +46,7 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Add all the route handlers in (reader/author)Routes to the app under the path /author /reader
+// Add all the route handlers in (user/manager)Routes to the app under the path /user /manager
 const userRoutes = require('./routes/user');
 app.use('/user', userRoutes);
 

@@ -4,7 +4,7 @@
 const express = require("express");
 const router = express.Router();
 
-// Assuming you have a global database object `global.db`
+
 router.get('/main', (req, res, next) => {
     // Query to get the list of offices
     const officeQuery = 'SELECT * FROM office';
@@ -138,10 +138,6 @@ router.post('/check-availability', (req, res, next) => {
     const startTime = req.body.start_time;
     const duration = parseInt(req.body.duration); // Duration in hours
 
-    // Log for debugging
-    console.log('officeName:', officeName);
-    console.log('startTime:', startTime);
-    console.log('duration:', duration);
 
     if (!officeName || !startTime || isNaN(duration)) {
         return res.status(400).send('Please provide office_name, start_time, and duration');
